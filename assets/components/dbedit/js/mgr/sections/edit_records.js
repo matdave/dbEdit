@@ -103,7 +103,7 @@ function myFunc()
     
     var panel = new Dbedit.panel.Records({
         id: 'dbedit-panel'
-        ,renderTo: 'dbedit-panel-records-div'
+        //,renderTo: 'dbedit-panel-records-div'
         ,items: [
             {html: '<h2>Edit Records</h2>'
             ,border: false
@@ -112,9 +112,9 @@ function myFunc()
             ,tabs
         ]
     });
-    //var page = new Dbedit.page.Records({id: 'dbedit-page',components: panel, renderTo: 'dbedit-panel-records-div'});
+    var page = new MODx.Component({id: 'dbedit-page'});
     
-    
+    MODx.load(page);
     
 }
 
