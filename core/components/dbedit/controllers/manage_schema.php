@@ -1,6 +1,8 @@
 <?php
  
-$js_url = '/trans_pkgs/dbedit/assets/components/dbedit/js/';
+include(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'\dbedit.config.php');
+
+$js_url = $assets_url.'components/dbedit/js/';
 
 $modx->regClientStartupScript($js_url.'mgr/dbedit.js');
 //$modx->regClientStartupHTMLBlock('<script type="text/javascript">

@@ -3,7 +3,8 @@ Dbedit.panel.Records = function(config) {
     this.ident = Ext.id();
   
     Ext.apply(config,{
-        border: false
+        id: 'dbedit-panel-main'
+        ,border: false
         ,baseCls: 'modx-formpanel'
         ,items: 
         [
@@ -12,13 +13,13 @@ Dbedit.panel.Records = function(config) {
                 ,border: false
                 ,cls: 'modx-page-header'
             }
-            ,{
+            /*,{
                 xtype: 'modx-tabs'
                 ,bodyStyle: 'padding: 10px'
                 ,defaults: { border: false ,autoHeight: false }
                 ,border: true
                 ,items: 
-                [{
+                [/*{
                     title: 'Dbedit'
                     ,defaults: { autoHeight: false }
                     ,minHeight: 500
@@ -33,7 +34,7 @@ Dbedit.panel.Records = function(config) {
                         }
                     ]
                 }]
-            }
+            }*/
             
         ]
     });
@@ -41,5 +42,7 @@ Dbedit.panel.Records = function(config) {
 };
 Ext.extend(Dbedit.panel.Records,MODx.Panel);
 Ext.reg('dbedit-panel-records',Dbedit.panel.Records);
+
+//function
 
 
