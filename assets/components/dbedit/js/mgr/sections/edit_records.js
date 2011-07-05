@@ -101,7 +101,7 @@ function myFunc()
     });
     tab1.add(grid1);
     
-    var panel = new Dbedit.panel.Records({
+    var panel = new MODx.Panel({
         id: 'dbedit-panel'
         //,renderTo: 'dbedit-panel-records-div'
         ,items: [
@@ -112,7 +112,7 @@ function myFunc()
             ,tabs
         ]
     });
-    var page = new MODx.Component({id: 'dbedit-page'});
+    var page = new MODx.Component({components: panel});
     
     MODx.load(page);
     
