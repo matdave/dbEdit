@@ -29,6 +29,7 @@ function myFunc()
     
     var tab1 = tabs.add({title: 'tab1'});
     var tab2 = tabs.add({title: 'tab2'});
+    var tab3 = tabs.add({title: 'tab3'});
     //tabs.doLayout();
     
     
