@@ -112,7 +112,8 @@ function myFunc()
             ,tabs
         ]
     });
-    //var page = new MODx.Component({id: 'dbedit-page', components: panel});
+    //var page = new Dbedit.page.Records({id: 'dbedit-page',components: panel, renderTo: 'dbedit-panel-records-div'});
+    
     
     
 }
