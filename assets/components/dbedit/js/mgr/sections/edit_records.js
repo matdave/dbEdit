@@ -5,8 +5,10 @@ Ext.onReady(function() {
 Dbedit.page.Records = function(config) {
     config = config || {};
     Ext.applyIf(config,{
-        components: [{
-            xtype: 'dbedit-panel-records'
+        id: 'dbedit-main'
+        ,components: [{
+            id: 'dbedit-panel'
+            ,xtype: 'dbedit-panel-records'
             ,renderTo: 'dbedit-panel-records-div'
         }]
     });
