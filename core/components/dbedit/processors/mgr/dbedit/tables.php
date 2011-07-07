@@ -10,28 +10,17 @@ $prefix = $modx->getOption('dbedit.prefix');
 
 $results = $modx->query("SHOW TABLES LIKE '".$prefix."%'");
 $tables = $results->fetchAll(PDO::FETCH_COLUMN);
-/* build query */
-//$c = $modx->newQuery('Dbedit');
-//
-//if(!empty($query))
-//{
-//    $c->where(array(
-//        'name:LIKE' => '%'.$query.'%'
-//        ,'OR:description:LIKE' => '%'.$query.'%'
-//    ));
-//}
-//
-//$count = $modx->getCount('Doodle',$c);
-//$c->sortby($sort,$dir);
-//if ($isLimit) $c->limit($limit,$start);
-//$doodles = $modx->getIterator('Doodle', $c);
- 
-/* iterate */
+
 $list = array();
 foreach ($tables as $table) {
     $tableArray = array();
+    
+    $colResults = $modx->query("SHOW COLUMNS FROM " . $table);
+    $arrColumns = $colResults->fetchAll();
+    
     $tableArray['name'] = $table;
     $tableArray['status'] = false;
+    $tableArray['columns'] = $arrColumns;
    
     $list[]= $tableArray;
 }
