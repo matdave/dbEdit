@@ -25,36 +25,46 @@ function buildPage(tableData)
         var arrFields = new Array();
         var arrColumns = new Array();
         var arrFormFields = new Array();
-        var arrTableName = tableData[t]['name'].split('_');
-        var tableName = arrTableName[arrTableName.length-1]
+        var arrTableName = tableData[t]['info']['Name'].split('_');
+        var tableName = arrTableName[arrTableName.length-1];
+        var tableTitle = tableData[t]['info']['Comment'];
         
-        console.log(tableName);
-        
-        tab = tabs.add({title: tableName});
+        tab = tabs.add({title: tableTitle});
         
         for(var c = 0; c < tableData[t]['columns'].length; c++)
         {
             arrFields.push(tableData[t]['columns'][c]['Field']);
             
+            var hidden = false;
+            
+            if(tableData[t]['columns'][c]['Extra'] == 'auto_increment')
+            {
+                hidden = true;
+            }
+            
             var newFormField = new Ext.form.Field({
                 xtype: 'textfield'
-                ,fieldLabel: tableData[t]['columns'][c]['Field']
+                ,fieldLabel: tableData[t]['columns'][c]['Comment']
                 ,name: tableData[t]['columns'][c]['Field']
                 ,width: 300
+                ,hidden: hidden
             });
             arrFormFields.push(newFormField);
 
             var newCol = new Ext.grid.Column({
-                header: tableData[t]['columns'][c]['Field']
+                header: tableData[t]['columns'][c]['Comment']
                 ,dataIndex: tableData[t]['columns'][c]['Field']
                 ,sortable: true
                 ,width: 60
+                ,hidden: hidden
+                ,editor: {xtype: 'textfield'}
             });
             arrColumns.push(newCol);
         }
         
         grid = new Dbedit.grid.Records({
             tableName: tableName
+            ,tableTitle: tableTitle
             ,formFields: arrFormFields
             ,fields: arrFields
             ,columns: arrColumns
@@ -85,6 +95,9 @@ Dbedit.grid.Records = function(config) {
         id: 'dbedit-grid-' + config.tableName
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {action: 'mgr/dbedit/records', userTable: config.tableName, tableClass: config.className}
+        ,save_action: 'mgr/dbedit/updateFromGrid'
+        ,saveParams: {userTable: config.tableName, tableClass: config.className}
+        ,autosave: true
         ,paging: true
         ,remoteSort: true
         ,anchor: '97%'
@@ -115,6 +128,7 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
         this.createWindow = new Dbedit.window.Create({
             className: this.config.className
             ,tableName: this.config.tableName
+            ,tableTitle: this.config.tableTitle
             ,listeners: {
                 'success': {fn:this.refresh,scope:this}
             }
@@ -123,19 +137,18 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
         this.createWindow.show(e.target);
     }
     ,update: function(btn,e) {
-        if (!this.updateWindow) {
-            this.updateWindow = new Dbedit.window.Update({
-                record: this.menu.record
-                ,className: this.config.className
-                ,tableName: this.config.tableName
-                ,listeners: {
-                    'success': {fn:this.refresh,scope:this}
-                }
-                ,fields: this.config.formFields
-            });
-        } else {
-            this.updateWindow.setValues(this.menu.record);
-        }
+        
+        this.updateWindow = new Dbedit.window.Update({
+            record: this.menu.record
+            ,className: this.config.className
+            ,tableName: this.config.tableName
+            ,tableTitle: this.config.tableTitle
+            ,listeners: {
+                'success': {fn:this.refresh,scope:this}
+            }
+            ,fields: this.config.formFields
+        });
+        
         this.updateWindow.show(e.target);
     }
     ,remove: function() {
@@ -192,7 +205,7 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
 Dbedit.window.Create = function(config) {
     config = config || {};
     Ext.applyIf(config,{
-        title: 'Create new ' + config.className
+        title: 'Create new ' + config.tableTitle
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {
             action: 'mgr/dbedit/create'
@@ -209,22 +222,13 @@ Ext.extend(Dbedit.window.Create,MODx.Window);
 Dbedit.window.Update = function(config) {
     config = config || {};
     Ext.applyIf(config,{
-<<<<<<< HEAD
-        id: 'dbedit-main'
-        ,components: [{
-            id: 'dbedit-panel'
-            ,xtype: 'dbedit-panel-records'
-            ,renderTo: 'dbedit-panel-records-div'
-        }]
-=======
-        title: 'Update ' + config.className
+        title: 'Update ' + config.tableTitle
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {
             action: 'mgr/dbedit/update'
             ,userTable: config.tableName
             ,tableClass: config.className
         }
->>>>>>> dev
     });
     Dbedit.window.Update.superclass.constructor.call(this,config);
 };

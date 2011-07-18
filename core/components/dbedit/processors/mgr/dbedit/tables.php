@@ -9,20 +9,43 @@ $query = $modx->getOption('query', $scriptProperties, '');
 $prefix = $modx->getOption('dbedit.prefix');
 
 $results = $modx->query("SHOW TABLES LIKE '".$prefix."%'");
-$tables = $results->fetchAll(PDO::FETCH_COLUMN);
+$tables = $results->fetchAll();
 
-$list = array();
-foreach ($tables as $table) {
-    $tableArray = array();
+$arrTables = array();
+
+foreach($tables as $table)
+{
+    $results = $modx->query("SHOW TABLE STATUS LIKE '".$table[0]."'");
+    $rows = $results->fetchAll();   
     
-    $colResults = $modx->query("SHOW COLUMNS FROM " . $table);
-    $arrColumns = $colResults->fetchAll();
+    foreach($rows as $row)
+    {
+        
+        //echo '<h2>'.$row['Comment'].'</h2>';
+        $results = $modx->query("SHOW FULL COLUMNS FROM $table[0]");
+        $columns = $results->fetchAll();
+
+        $arrColumns = array();
+        foreach($columns as $column)
+        {
+            $arrColumns[] = $column;
+           // echo $column['Comment'].'<br />';
+
+        }
+        
+        $arrTable['info'] = $row;
+        $arrTable['columns'] = $arrColumns;
+        $arrTables[] = $arrTable;
+        
+    }
     
-    $tableArray['name'] = $table;
-    $tableArray['status'] = false;
-    $tableArray['columns'] = $arrColumns;
-   
-    $list[]= $tableArray;
+    
 }
-return $this->outputArray($list);
+
+//echo '<pre>';
+//print_r($arrTables);
+//echo '</pre>';
+
+
+return $this->outputArray($arrTables);
 ?>
