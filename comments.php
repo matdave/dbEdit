@@ -1,11 +1,22 @@
 <?php
-$isLimit = !empty($scriptProperties['limit']);
-$start = $modx->getOption('start',$scriptProperties,0);
-$limit = $modx->getOption('limit',$scriptProperties,10);
-$sort = $modx->getOption('sort',$scriptProperties,'name');
-$dir = $modx->getOption('dir',$scriptProperties,'ASC');
-$query = $modx->getOption('query', $scriptProperties, '');
- 
+include 'config.core.php';
+
+include MODX_CORE_PATH.'model/modx/modx.class.php';
+
+$modx = new modX();
+$modx->initialize('mgr');
+
+include($modx->getOption('core_path').'config/config.inc.php');
+
+//$xpdo = new xPDO($database_dsn, $database_user, $database_password, array(xPDO::OPT_TABLE_PREFIX => $modx->getOption('dbedit.prefix')));
+//$modelPath = $modx->getOption('core_path') . 'components/dbedit/model/';
+////$xpdo->addPackage('dbedit', $modelPath);
+
+//$results = $xpdo->query("SHOW TABLES LIKE '".$prefix."%'");
+
+//$tables = array('user_accounts', 'user_dbedit');
+
+
 $prefix = $modx->getOption('dbedit.prefix');
 
 $results = $modx->query("SHOW TABLES LIKE '".$prefix."%'");
@@ -20,6 +31,8 @@ foreach($tables as $table)
     
     foreach($rows as $row)
     {
+        
+        //echo '<h2>'.$row['Comment'].'</h2>';
         $results = $modx->query("SHOW FULL COLUMNS FROM $table[0]");
         $columns = $results->fetchAll();
 
@@ -27,6 +40,8 @@ foreach($tables as $table)
         foreach($columns as $column)
         {
             $arrColumns[] = $column;
+           // echo $column['Comment'].'<br />';
+
         }
         
         $arrTable['info'] = $row;
@@ -34,7 +49,14 @@ foreach($tables as $table)
         $arrTables[] = $arrTable;
         
     }
+    
+    
 }
+
+echo '<pre>';
+print_r($arrTables);
+echo '</pre>';
+
 
 return $this->outputArray($arrTables);
 ?>
