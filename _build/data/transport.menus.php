@@ -3,21 +3,21 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-$chunks = array();
+$menus = array();
 
-$dir = dirname(__FILE__).'/chunks/';
+$dir = dirname(__FILE__).'/menus/';
 
 if($handle = opendir($dir))
 {
     while(($file = readdir($handle)) !== false)
     {
         if(is_file($dir.$file))
-        {
-            $chunks[] = include $dir.$file;
+        { 
+            $menus[] = include $dir.$file;
         }
 
     }
 }
 
-return $chunks;
+return $menus;
 ?>

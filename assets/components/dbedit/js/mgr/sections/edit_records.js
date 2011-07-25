@@ -24,6 +24,11 @@ function buildPage(tableData)
         ,defaults: { border: false ,autoHeight: true }
     });
     
+    //Add our Manage Table List
+    var manageTab = tabs.add({title: 'Manage Tables'});
+    manageTab.add(buildMenu());
+    
+    
     // For each custom table...
     for(var t = 0; t < tableData.length; t++)
     {
@@ -37,7 +42,7 @@ function buildPage(tableData)
         var tableTitle = tableData[t]['info']['Comment'];
         
         // Create a new tab for our table
-        tab = tabs.add({title: tableTitle});
+        var tab = tabs.add({title: tableTitle});
         
         // For each column in this table
         for(var c = 0; c < tableData[t]['columns'].length; c++)
@@ -102,101 +107,6 @@ function buildPage(tableData)
     });  
 }
 
-function buildFormFields(tableData, arrFormFields, hidden)
-{
-    // Our config array
-    var arrConfig = {
-        // Set the label from the comment field for column
-        fieldLabel: tableData['Comment']
-        // Set the name from the actual field name
-        ,name: tableData['Field']
-        // Set a default width of 300
-        ,width: 300
-        // Set whether the column is hidden
-        ,hidden: hidden
-    }
-    
-    // Get the field type from the column info.  Strip out the size.  i.e. Varchar(200)
-    var arrType = tableData['Type'].split('(');
-    var type = arrType[0];
-    
-    // Our new form field
-    var newFormField;
-    
-    // Depending on our type, select what type of field to create.  Pass in our 
-    // config array from above
-    switch(type)
-    {
-        case 'text':
-            newFormField = new Ext.form.TextArea(arrConfig);
-        break;
-        
-        case 'date':
-            newFormField = new Ext.form.DateField(arrConfig);
-        break;
-        
-        case 'int':
-            newFormField = new Ext.form.NumberField(arrConfig);
-        break;
-        
-        default:
-            newFormField = new Ext.form.TextField(arrConfig);
-    }
-    
-    // Add the new form field to our collection
-    arrFormFields.push(newFormField);
-}
-
-function buildGridColumns(tableData, arrColumns, hidden)
-{   
-    // This will be the xtype for our grid column
-    var xtype;
-    
-    // Get the field type from the column info.  Strip out the size.  i.e. Varchar(200)
-    var arrType = tableData['Type'].split('(');
-    var type = arrType[0];
-   
-    // Depending on our type, select what type of column to create.
-    // This will be used for inline field editing.
-    switch(type)
-    {
-        case 'text':
-            xtype = 'textarea';
-        break;
-        
-        case 'date':
-            xtype = 'datefield';
-        break;
-        
-        case 'int':
-            xtype = 'numberfield';
-        break;
-        
-        default:
-            xtype = 'textfield';
-    }
-    
-    // Create config array for our new column 
-    var column = {
-        // Get the column header from the table column's Comment field
-        header: tableData['Comment']
-        // Set the datafield name from the actual column name
-        ,dataIndex: tableData['Field']
-        // Allow sorting
-        ,sortable: true
-        // Set a default width of 60
-        ,width: 60
-        // Set whether the column is hidden
-        ,hidden: hidden
-        // Set the type of field for inline editing
-        ,editor: {xtype: xtype}
-    }
-    
-    // Create the new ExtJS column
-    var newCol = new Ext.grid.Column(column);
-    // Add the column to our column collection
-    arrColumns.push(newCol);
-}
 
 Dbedit.grid.Records = function(config) {
     config = config || {};
@@ -340,3 +250,126 @@ Dbedit.window.Update = function(config) {
     Dbedit.window.Update.superclass.constructor.call(this,config);
 };
 Ext.extend(Dbedit.window.Update,MODx.Window);
+
+function buildMenu()
+{
+    var generateSchema = function(btn){
+        MODx.Ajax.request({
+            url: Dbedit.config.connectorUrl
+            ,params: {
+                action: 'mgr/dbedit/generate_schema'
+                ,corePath: Dbedit.config.corePath
+                ,packageName: 'dbedit'
+            }
+            ,listeners:{
+                'success': {fn:MODx.msg.alert('Schema Refreshed.','Your custom tables are ready to use!'),scope:this}
+            }
+        });
+    }
+    
+    var button = new Ext.Button({
+        text: 'Generate Schema' 
+        ,handler: generateSchema
+    });
+
+
+    return button;    
+}
+
+
+
+function buildFormFields(tableData, arrFormFields, hidden)
+{
+    // Our config array
+    var arrConfig = {
+        // Set the label from the comment field for column
+        fieldLabel: tableData['Comment']
+        // Set the name from the actual field name
+        ,name: tableData['Field']
+        // Set a default width of 300
+        ,width: 300
+        // Set whether the column is hidden
+        ,hidden: hidden
+    }
+    
+    // Get the field type from the column info.  Strip out the size.  i.e. Varchar(200)
+    var arrType = tableData['Type'].split('(');
+    var type = arrType[0];
+    
+    // Our new form field
+    var newFormField;
+    
+    // Depending on our type, select what type of field to create.  Pass in our 
+    // config array from above
+    switch(type)
+    {
+        case 'text':
+            newFormField = new Ext.form.TextArea(arrConfig);
+        break;
+        
+        case 'date':
+            newFormField = new Ext.form.DateField(arrConfig);
+        break;
+        
+        case 'int':
+            newFormField = new Ext.form.NumberField(arrConfig);
+        break;
+        
+        default:
+            newFormField = new Ext.form.TextField(arrConfig);
+    }
+    
+    // Add the new form field to our collection
+    arrFormFields.push(newFormField);
+}
+
+function buildGridColumns(tableData, arrColumns, hidden)
+{   
+    // This will be the xtype for our grid column
+    var xtype;
+    
+    // Get the field type from the column info.  Strip out the size.  i.e. Varchar(200)
+    var arrType = tableData['Type'].split('(');
+    var type = arrType[0];
+   
+    // Depending on our type, select what type of column to create.
+    // This will be used for inline field editing.
+    switch(type)
+    {
+        case 'text':
+            xtype = 'textarea';
+        break;
+        
+        case 'date':
+            xtype = 'datefield';
+        break;
+        
+        case 'int':
+            xtype = 'numberfield';
+        break;
+        
+        default:
+            xtype = 'textfield';
+    }
+    
+    // Create config array for our new column 
+    var column = {
+        // Get the column header from the table column's Comment field
+        header: tableData['Comment']
+        // Set the datafield name from the actual column name
+        ,dataIndex: tableData['Field']
+        // Allow sorting
+        ,sortable: true
+        // Set a default width of 60
+        ,width: 60
+        // Set whether the column is hidden
+        ,hidden: hidden
+        // Set the type of field for inline editing
+        ,editor: {xtype: xtype}
+    }
+    
+    // Create the new ExtJS column
+    var newCol = new Ext.grid.Column(column);
+    // Add the column to our column collection
+    arrColumns.push(newCol);
+}

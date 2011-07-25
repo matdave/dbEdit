@@ -1,11 +1,11 @@
 <?php
 $setting = $modx->newObject('modSystemSetting');
 $setting->fromArray(array(
-    'key' => 'gears.contactUsThankYouPageId'
-    ,'value' => ''
+    'key' => 'dbedit.prefix'
+    ,'value' => 'user_'
     ,'xtype' => 'textfield'
     ,'namespace' => PKG_NAME_LOWER
-    ,'area' => 'Page ID'
+    ,'area' => ''
 ), '', true, true);
 
 return $setting;

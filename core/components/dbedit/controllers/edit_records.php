@@ -1,6 +1,6 @@
 <?php
  
-include(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'\dbedit.config.php');
+include dirname(dirname(__FILE__)).'/dbedit.config.php';
 
 $js_url = $dbeditConfig['assetsUrl'].'components/dbedit/js/';
 
