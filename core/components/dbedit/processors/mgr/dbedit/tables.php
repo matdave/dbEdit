@@ -13,26 +13,38 @@ $tables = $results->fetchAll();
 
 $arrTables = array();
 
+require_once 'xpdo.config.php';
+
 foreach($tables as $table)
 {
-    $results = $modx->query("SHOW TABLE STATUS LIKE '".$table[0]."'");
-    $rows = $results->fetchAll();   
-    
-    foreach($rows as $row)
-    {
-        $results = $modx->query("SHOW FULL COLUMNS FROM $table[0]");
-        $columns = $results->fetchAll();
+    // Generate the xPDO class name for the table
+    $arrName = explode('_', $table[0]);
+    // Test to see if the class has an associated table
+    $tester = $xpdo->getTableName(ucfirst($arrName[1]));
 
-        $arrColumns = array();
-        foreach($columns as $column)
+    // If the class doesn't have an associated table, then its schema hasn't been generated yet,
+    // so we don't return it to CMP
+    if($tester != '')
+    {
+        $results = $modx->query("SHOW TABLE STATUS LIKE '".$table[0]."'");
+        $rows = $results->fetchAll();
+
+        foreach($rows as $row)
         {
-            $arrColumns[] = $column;
+            $results = $modx->query("SHOW FULL COLUMNS FROM $table[0]");
+            $columns = $results->fetchAll();
+
+            $arrColumns = array();
+            foreach($columns as $column)
+            {
+                $arrColumns[] = $column;
+            }
+
+            $arrTable['info'] = $row;
+            $arrTable['columns'] = $arrColumns;
+            $arrTables[] = $arrTable;
+
         }
-        
-        $arrTable['info'] = $row;
-        $arrTable['columns'] = $arrColumns;
-        $arrTables[] = $arrTable;
-        
     }
 }
 

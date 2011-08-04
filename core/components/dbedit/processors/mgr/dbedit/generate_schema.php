@@ -63,7 +63,7 @@ $regenerate_schema = true;
 $regenerate_classes = true;
  
 // Your package shortname:
-$package_name = 'dbedit';
+///**/$package_name = 'dbedit';
  
  
 // Database Login Info can be set explicitly:
@@ -79,8 +79,7 @@ $database_password  = '';   // password for that database user
 // that you only generate classes/maps for the tables identified by the $table_prefix.
 $restrict_prefix = true;
 
-
-if(isset($_POST['corePath1'])) 
+if(isset($_POST['corePath'])) 
 {
     $corePath = $_POST['corePath'];
 }
@@ -108,8 +107,8 @@ $table_prefix = $modx->getOption('dbedit.prefix');
 //  DO NOT TOUCH BELOW THIS LINE
 //------------------------------------------------------------------------------
 //$base_path = realpath(dirname(dirname(__FILE__)));
-$xpdo_path = strtr( $corePath . 'xpdo/xpdo.class.php', '\\', '/');
-include_once ( $xpdo_path );
+
+include_once ($corePath . 'xpdo/xpdo.class.php');
  
 // A few definitions of files/folders:
 $package_dir = $corePath.'components/'.$package_name.'/';
@@ -212,16 +211,16 @@ $totalTime= sprintf("%2.4f s", $totalTime);
 
 return $modx->error->success('Custom Table schema has been generated.');
 
-if ($verbose)
+/*if ($verbose)
 {
     print_msg("<br/><br/><strong>Finished!</strong> Execution time: {$totalTime}<br/>");
- 
+
     if ($regenerate_schema)
     {
         print_msg("<br/>If you need to define aggregate/composite relationships in your XML schema file, be sure to regenerate your class files.");
     }
 
-}
+}*/
  
 exit ();
  

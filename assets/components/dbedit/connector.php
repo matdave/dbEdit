@@ -12,7 +12,10 @@ $corePath = $modx->getOption('dbedit.core_path',null,$modx->getOption('core_path
 ///* handle request */
 //$path = $modx->getOption('processorsPath',$modx->doodles->config,$corePath.'processors/');
 
+$modx->lexicon->load('dbedit:default');
+
 $path = $corePath.'components/dbedit/processors/';
+
 $modx->request->handleRequest(array(
     'processors_path' => $path,
     'location' => '',

@@ -7,5 +7,6 @@ Ext.extend(Dbedit,Ext.Component,{
 });
 Ext.reg('dbedit',Dbedit);
 
+
 Dbedit = new Dbedit();
 

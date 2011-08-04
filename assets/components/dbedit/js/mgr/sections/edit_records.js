@@ -1,6 +1,6 @@
 function getTables()
 {
-    //Success callback for the Ajax Request.  This passess the table metadata to
+    //Success callback for the Ajax Request.  This passes the table metadata to
     //the main buildPage function
     var recieved = function(response)
     {
@@ -23,12 +23,7 @@ function buildPage(tableData)
         bodyStyle: 'padding: 10px'
         ,defaults: { border: false ,autoHeight: true }
     });
-    
-    //Add our Manage Table List
-    var manageTab = tabs.add({title: 'Manage Tables'});
-    manageTab.add(buildMenu());
-    
-    
+
     // For each custom table...
     for(var t = 0; t < tableData.length; t++)
     {
@@ -97,7 +92,7 @@ function buildPage(tableData)
         ,baseCls: 'modx-formpanel'
         ,renderTo: 'dbedit-panel-records-div'
         ,items: [
-            {html: '<h2>Edit Records</h2>'
+            {html: '<h2>'+_('dbedit.edit_records')+'</h2>'
             ,border: false
             ,cls: 'modx-page-header'
             }
@@ -134,7 +129,7 @@ Dbedit.grid.Records = function(config) {
         ,tbar: 
             [{
                 // This is our button for creating new records
-                text: 'Add Record'
+                text: _('dbedit.record_create')
                 ,handler: this.create
                 ,blankValues: true
             }]
@@ -145,10 +140,10 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
     // This handler brings up our context menu with our Update and Delete options
     getMenu: function() {
         var m = [{
-            text: 'Update ' + this.config.className
+            text: _('dbedit.record_update')
             ,handler: this.update
         },'-',{
-            text: 'Remove ' + this.config.className
+            text: _('dbedit.record_remove')
             ,handler: this.remove
         }];
         this.addContextMenuItem(m);
@@ -196,8 +191,8 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
     // This handler deletes the current record
     ,remove: function() {
         MODx.msg.confirm({
-            title: 'Remove ' + this.config.className
-            ,text: 'Are you sure you want to remove this ' + this.config.className
+            title: _('dbedit.record_remove')
+            ,text: _('dbedit.record_remove_confirm')
             ,url: this.config.url
             ,params: {
                 action: 'mgr/dbedit/remove'
@@ -217,7 +212,7 @@ Dbedit.window.Create = function(config) {
     config = config || {};
     Ext.applyIf(config,{
         //  We finally use the tableTitle
-        title: 'Create new ' + config.tableTitle
+        title: _('dbedit.record_create')
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {
             action: 'mgr/dbedit/create'
@@ -231,13 +226,12 @@ Dbedit.window.Create = function(config) {
 };
 Ext.extend(Dbedit.window.Create,MODx.Window);
 
-
 // Definition for our modal Create window
 Dbedit.window.Update = function(config) {
     config = config || {};
     Ext.applyIf(config,{
         //  We finally use the tableTitle
-        title: 'Update ' + config.tableTitle
+        title: _('dbedit.record_update')
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {
             action: 'mgr/dbedit/update'
@@ -250,33 +244,6 @@ Dbedit.window.Update = function(config) {
     Dbedit.window.Update.superclass.constructor.call(this,config);
 };
 Ext.extend(Dbedit.window.Update,MODx.Window);
-
-function buildMenu()
-{
-    var generateSchema = function(btn){
-        MODx.Ajax.request({
-            url: Dbedit.config.connectorUrl
-            ,params: {
-                action: 'mgr/dbedit/generate_schema'
-                ,corePath: Dbedit.config.corePath
-                ,packageName: 'dbedit'
-            }
-            ,listeners:{
-                'success': {fn:MODx.msg.alert('Schema Refreshed.','Your custom tables are ready to use!'),scope:this}
-            }
-        });
-    }
-    
-    var button = new Ext.Button({
-        text: 'Generate Schema' 
-        ,handler: generateSchema
-    });
-
-
-    return button;    
-}
-
-
 
 function buildFormFields(tableData, arrFormFields, hidden)
 {
