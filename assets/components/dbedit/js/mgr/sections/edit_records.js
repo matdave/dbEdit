@@ -79,7 +79,7 @@ function buildPage(tableData)
             // our modal Create and Update windows
             ,formFields: arrFormFields
             // We need to pass a separate array of form fields to the create form.
-            // Otherwise, we won't get a blank form after an update
+            // Otherwise we won't get a blank form
             ,createFields: arrCreateFields
             // Pass our array of data fields.  The grid will use these for data access
             ,fields: arrFields
@@ -170,7 +170,6 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
             // Pass our collection of form fields for data access
             ,fields: this.config.createFields
         });
-
         this.createWindow.show(e.target);
     }
     // This handler creates a modal window for updating a record
@@ -226,6 +225,7 @@ Dbedit.window.Create = function(config) {
             // We finally pass the className to the processor for xPDO
             ,tableClass: config.className
         }
+        ,blankValues: true
     });
     Dbedit.window.Create.superclass.constructor.call(this,config);
 };
