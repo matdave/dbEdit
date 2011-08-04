@@ -30,6 +30,7 @@ function buildPage(tableData)
         var arrFields = new Array();
         var arrColumns = new Array();
         var arrFormFields = new Array();
+        var arrCreateFields = new Array();
         
         // Get the name of the table, i.e. user_table, and strip of the prefix.
         var arrTableName = tableData[t]['info']['Name'].split('_');
@@ -59,15 +60,17 @@ function buildPage(tableData)
             // our array of form fields (for our create and update modal dialogs)
             // whether or not the field is hidden
             buildFormFields(tableData[t]['columns'][c], arrFormFields, hidden);
+            buildFormFields(tableData[t]['columns'][c], arrCreateFields, hidden)
 
             // Same as above.  Here we're building our collection of grid control columns
             buildGridColumns(tableData[t]['columns'][c], arrColumns, hidden);
         }
-        
+
+       
         // Create our grid for the current table
         grid = new Dbedit.grid.Records({
             // Pass in the actual table name.  This will be passed to processors
-            // for accesssing the table via xPDO.
+            // for accessing the table via xPDO.
             tableName: tableName
             // Pass the table's title to the config.  We will use this for
             // Modal window titles
@@ -75,6 +78,9 @@ function buildPage(tableData)
             // Pass in our array of form fields.  This will be used to generate
             // our modal Create and Update windows
             ,formFields: arrFormFields
+            // We need to pass a separate array of form fields to the create form.
+            // Otherwise, we won't get a blank form after an update
+            ,createFields: arrCreateFields
             // Pass our array of data fields.  The grid will use these for data access
             ,fields: arrFields
             // Pass our array of columns.  This defines the columns in each grid.
@@ -131,7 +137,6 @@ Dbedit.grid.Records = function(config) {
                 // This is our button for creating new records
                 text: _('dbedit.record_create')
                 ,handler: this.create
-                ,blankValues: true
             }]
     });
     Dbedit.grid.Records.superclass.constructor.call(this,config)
@@ -163,13 +168,14 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
                 'success': {fn:this.refresh,scope:this}
             }
             // Pass our collection of form fields for data access
-            ,fields: this.config.formFields
+            ,fields: this.config.createFields
         });
+
         this.createWindow.show(e.target);
     }
     // This handler creates a modal window for updating a record
     ,update: function(btn,e) 
-    {    
+    {
         this.updateWindow = new Dbedit.window.Update({
             // Pass the current record.
             record: this.menu.record
@@ -185,7 +191,7 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
             // Pass our collection of form fields for data access
             ,fields: this.config.formFields
         });
-        
+        this.updateWindow.setValues(this.menu.record);
         this.updateWindow.show(e.target);
     }
     // This handler deletes the current record
@@ -211,7 +217,6 @@ Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
 Dbedit.window.Create = function(config) {
     config = config || {};
     Ext.applyIf(config,{
-        //  We finally use the tableTitle
         title: _('dbedit.record_create')
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {
@@ -230,7 +235,6 @@ Ext.extend(Dbedit.window.Create,MODx.Window);
 Dbedit.window.Update = function(config) {
     config = config || {};
     Ext.applyIf(config,{
-        //  We finally use the tableTitle
         title: _('dbedit.record_update')
         ,url: Dbedit.config.connectorUrl
         ,baseParams: {

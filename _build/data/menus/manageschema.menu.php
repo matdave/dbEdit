@@ -1,10 +1,10 @@
 <?php
 $action= $modx->newObject('modAction');
 $action->fromArray(array(
-    'id' => 10000,
+    'id' => 10001,
     'namespace' => 'dbedit',
     'parent' => 0,
-    'controller' => 'controllers/edit_records',
+    'controller' => 'controllers/manage_schema',
     'haslayout' => true,
     'lang_topics' => 'dbedit:default',
     'assets' => '',
@@ -12,9 +12,9 @@ $action->fromArray(array(
 
 $menu= $modx->newObject('modMenu');
 $menu->fromArray(array(
-    'text' => 'dbedit.edit_tables',
+    'text' => 'dbedit.schema_manage',
     'parent' => 'Database Editor',
-    'description' => 'dbedit.edit_tables_desc',
+    'description' => 'dbedit.schema_desc',
     'icon' => '',
     'menuindex' => 0,
     'params' => '',
