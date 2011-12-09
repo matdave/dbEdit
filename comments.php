@@ -15,26 +15,101 @@ include($modx->getOption('core_path').'config/config.inc.php');
 //$results = $xpdo->query("SHOW TABLES LIKE '".$prefix."%'");
 
 //$tables = array('user_accounts', 'user_dbedit');
-
+require_once 'core/components/dbedit/processors/mgr/dbedit/xpdo.config.php';
 
 $prefix = $modx->getOption('dbedit.prefix');
 
+
+
 $results = $modx->query("SHOW TABLES LIKE '".$prefix."%'");
-$tables = $results->fetchAll();
+$tables = $results->fetchAll(PDO::FETCH_NUM);
 
 $arrTables = array();
 
-foreach($tables as $table)
+
+
+
+$modelPath = $modx->getOption('core_path') . 'components/dbedit/model/';
+
+$manager = $xpdo->getManager();
+$generator = $manager->getGenerator();
+$generator->parseSchema($modelPath.'schema/dbedit.mysql.schema.xml',$modelPath);
+
+$xpdo->addPackage('dbedit', $modelPath);
+
+/*$stu = $xpdo->getObject('Sfowner', array('name' => 'Stuart Wilsman'));
+
+echo $stu->get('id');
+echo '<br />'.$stu->get('name');
+echo '<br />'.$stu->get('email');
+
+$rightway = $xpdo->getObject('Sfstores', array('name' => 'Rightway Grocery'));
+
+echo '<br />'.$rightway->get('id');
+echo '<br />'.$rightway->get('name');*/
+
+
+/*$arrClasses = array('Sfowner', 'Sfstores', 'Sfstoreowner');
+
+foreach($arrClasses as $class)
+{
+    echo '<h2>'.$class.'</h2>';
+    
+    $soAggregates = $xpdo->getAggregates($class);
+    echo 'Aggregates:  <pre>';
+    print_r($soAggregates);
+    echo '</pre>';
+
+    $soAggregates = $xpdo->getComposites($class);
+    echo 'Composites:  <pre>';
+    print_r($soAggregates);
+    echo '</pre>';
+}*/
+
+/*$soAggregates = $xpdo->getAggregates('Sfstoreowner');
+echo '<pre>';
+print_r($soAggregates);
+echo '</pre>';
+
+$soAggregates = $xpdo->getComposites('Sfstoreowner');
+echo '<pre>';
+print_r($soAggregates);
+echo '</pre>';*/
+/*echo '<br />';
+
+
+$storeOwner = xPDOObject::getSelectColumns($xpdo, 'Sfstoreowner');
+$arrColumns = str_replace('`', '', explode(',', $storeOwner));
+
+print_r($arrColumns);
+
+$tempSO = $xpdo->newObject('Sfstoreowner');
+
+foreach($arrColumns as $column)
+{
+    echo '<br />'.$column.' - ';
+    echo $tempSO->getFKClass(trim($column));
+}
+echo '<br />'.$tempSO->getFKClass('id');
+echo '<br />'.$tempSO->getFKClass('store');
+echo '<br />'.$tempSO->getFKClass('owner');*/
+
+
+
+
+
+
+/*foreach($tables as $table)
 {
     $results = $modx->query("SHOW TABLE STATUS LIKE '".$table[0]."'");
-    $rows = $results->fetchAll();   
+    $rows = $results->fetchAll(PDO::FETCH_ASSOC);
     
     foreach($rows as $row)
     {
         
         //echo '<h2>'.$row['Comment'].'</h2>';
         $results = $modx->query("SHOW FULL COLUMNS FROM $table[0]");
-        $columns = $results->fetchAll();
+        $columns = $results->fetchAll(PDO::FETCH_ASSOC);
 
         $arrColumns = array();
         foreach($columns as $column)
@@ -47,16 +122,13 @@ foreach($tables as $table)
         $arrTable['info'] = $row;
         $arrTable['columns'] = $arrColumns;
         $arrTables[] = $arrTable;
-        
     }
-    
-    
 }
 
 echo '<pre>';
 print_r($arrTables);
-echo '</pre>';
+echo '</pre>';*/
 
 
-return $this->outputArray($arrTables);
+//return $this->outputArray($arrTables);
 ?>

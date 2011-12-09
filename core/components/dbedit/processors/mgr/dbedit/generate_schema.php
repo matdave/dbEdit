@@ -201,6 +201,7 @@ if ($regenerate_classes)
  
 // This is harmless in and of itself: files won't be overwritten if they exist.
 $generator->parseSchema($xml_schema_file, $model_dir);
+
  
 $mtime= microtime();
 $mtime= explode(" ", $mtime);

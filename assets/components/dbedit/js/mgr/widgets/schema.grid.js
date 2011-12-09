@@ -2,7 +2,7 @@ Dbedit.grid.Dbedit = function(config) {
     config = config || {};
     Ext.applyIf(config,{
         id: 'dbedit-grid-dbedit'
-        ,url: '/trans_pkgs/dbedit/assets/components/dbedit/connector.php'
+        ,url: Dbedit.config.connectorUrl
         ,baseParams: {action: 'mgr/dbedit/tables'}
         ,fields: ['name', 'status']
         ,paging: true

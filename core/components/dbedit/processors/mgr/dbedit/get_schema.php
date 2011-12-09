@@ -12,7 +12,17 @@ foreach($tables as $table)
     $arrTable = array('table_name' => $table[0]);
 
     $arrName = explode('_', $table[0]);
-    $tester = $xpdo->getTableName(ucfirst($arrName[1]));
+
+    unset($arrName[0]);
+
+    foreach($arrName as &$name)
+    {
+        $name = ucfirst($name);
+    }
+
+    $table = implode('', $arrName);
+    //$tester = $xpdo->getTableName(ucfirst($arrName[1]));
+    $tester = $xpdo->getTableName(ucfirst($table));
     if($tester == '')
     {
         $arrTable['has_schema'] = false;
