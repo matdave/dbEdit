@@ -6,7 +6,7 @@ set_time_limit(0);
 /* define package names */
 define('PKG_NAME', 'DbEdit');
 define('PKG_NAME_LOWER', 'dbedit');
-define('PKG_VERSION', '1.01');
+define('PKG_VERSION', '1.03');
 define('PKG_RELEASE', 'rc1');
 
 /* define build paths */
@@ -102,23 +102,6 @@ $vehicle->resolve('file', array(
     'target' => "return MODX_ASSETS_PATH . 'components/';"
 ));
 
-/*//PHP RESOLVERS
-$dir = dirname(__FILE__).'/resolvers/';
-
-if($handle = opendir($dir))
-{
-    while(($file = readdir($handle)) !== false)
-    {
-        if(is_file($dir.$file))
-        { 
-            $vehicle->resolve('php', array(
-                'source' => $dir.$file
-            ));
-        }
-
-    }
-}
-*/
 $modx->log(modX::LOG_LEVEL_INFO,'Packaged in resolvers.'); flush();
 $builder->putVehicle($vehicle);
 
@@ -149,8 +132,8 @@ $vehicle= $builder->createVehicle($menu,array (
             'Action' => array (
                 xPDOTransport::PRESERVE_KEYS => false,
                 xPDOTransport::UPDATE_OBJECT => true,
-               // xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-                xPDOTransport::UNIQUE_KEY => array ('id')
+                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
+                //xPDOTransport::UNIQUE_KEY => array ('id')
             ),
         ),
     ),
@@ -171,8 +154,30 @@ $vehicle= $builder->createVehicle($menu,array (
             'Action' => array (
                 xPDOTransport::PRESERVE_KEYS => false,
                 xPDOTransport::UPDATE_OBJECT => true,
-               // xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-                xPDOTransport::UNIQUE_KEY => array ('id')
+                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
+                //xPDOTransport::UNIQUE_KEY => array ('')
+            ),
+        ),
+    ),
+));
+$builder->putVehicle($vehicle);
+unset($vehicle,$menu);
+
+$modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
+$menu = include $sources['data'].'menus/relationships.menu.php';
+if (empty($menu)) $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
+$vehicle= $builder->createVehicle($menu,array (
+    xPDOTransport::PRESERVE_KEYS => true,
+    xPDOTransport::UPDATE_OBJECT => true,
+    xPDOTransport::UNIQUE_KEY => 'text',
+    xPDOTransport::RELATED_OBJECTS => true,
+    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+        xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+            'Action' => array (
+                xPDOTransport::PRESERVE_KEYS => false,
+                xPDOTransport::UPDATE_OBJECT => true,
+                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
+//                xPDOTransport::UNIQUE_KEY => array ('id')
             ),
         ),
     ),

@@ -1,56 +1,7 @@
 <?php
-/*------------------------------------------------------------------------------
-================================================================================
-=== Reverse Engineer Existing MySQL Database Tables to xPDO Maps and Classes ===
-================================================================================
- 
-SYNOPSIS:
-This script generates the XML schema and PHP class files that describe custom
-database tables.
- 
-This script is meant to be executed once only: after the class and schema files
-have been created, the purpose of this script has been served.
- 
-USAGE:
-1. Upload this file to the root of your MODx installation
-2. Set the configuration details below
-3. Navigate to this script in a browser to execute it,
-    e.g. http://yoursite.com/thisscript.php
-    or, you can do this via the command line, e.g. php this-script.php
- 
-INPUT:
-Please configure the options below.
- 
-OUTPUT:
-Creates XML and PHP files:
-    core/components/$package_name/model/$package_name/*.class.php
-    core/components/$package_name/model/$package_name/mysql/*.class.php
-    core/components/$package_name/model/$package_name/mysql/*.inc.php
-    core/components/$package_name/schema/$package_name.mysql.schema.xml
- 
-SEE ALSO:
-http://modxcms.com/forums/index.php?topic=40174.0
-http://rtfm.modx.com/display/revolution20/Using+Custom+Database+Tables+in+your+3rd+Party+Components
-http://rtfm.modx.com/display/xPDO20/xPDOGenerator.writeSchema
-------------------------------------------------------------------------------*/
- 
-/*------------------------------------------------------------------------------
-        CONFIGURATION
-------------------------------------------------------------------------------
-Be sure to create a valid database user with permissions to the appropriate
-databases and tables before you try to run this script, e.g. by running
-something like the following:
- 
-CREATE USER 'your_user'@'localhost' IDENTIFIED BY 'y0urP@$$w0rd';
-GRANT ALL ON your_db.* TO 'your_user'@'localhost';
-FLUSH PRIVILEGES;
- 
-Be sure to test that the login criteria you created actually work before
-continuing. If you *can* log in, but you receive errors (e.g. SQLSTATE[42000] [1044] )
-when this script runs, then you may need to grant permissions for CREATE TEMPORARY TABLES
-------------------------------------------------------------------------------*/
-$debug = false;     // if true, will include verbose debugging info, including SQL errors.
-$verbose = false;    // if true, will print status info.
+
+$debug = true;     // if true, will include verbose debugging info, including SQL errors.
+$verbose = true;    // if true, will print status info.
  
 // The XML schema file *must* be updated each time the database is modified, either
 // manually or via this script. By default, the schema is regenerated.
@@ -61,11 +12,7 @@ $regenerate_schema = true;
  
 // Class files are not overwritten by default
 $regenerate_classes = true;
- 
-// Your package shortname:
-///**/$package_name = 'dbedit';
- 
- 
+
 // Database Login Info can be set explicitly:
 $database_server    = '';      // most frequently, your database resides locally
 $dbase          = '';       // name of your database
@@ -79,44 +26,35 @@ $database_password  = '';   // password for that database user
 // that you only generate classes/maps for the tables identified by the $table_prefix.
 $restrict_prefix = true;
 
-if(isset($_POST['corePath'])) 
-{
-    $corePath = $_POST['corePath'];
-}
-else
-{
-    return $modx->error->failure('Core Path not specified.');
-}
+include 'config.core.php';
 
-if(isset($_POST['packageName'])) 
-{
-    $package_name = $_POST['packageName'];
-}
-else
-{
-    return $modx->error->failure('Package Name not specified.');
-}
+$corePath = MODX_CORE_PATH;
 
 
-include $corePath.'config/config.inc.php';
- 
-$table_prefix = $modx->getOption('dbedit.prefix'); 
- 
+include $corePath . 'model/modx/modx.class.php';
+
+$modx = new modX();
+$modx->initialize('mgr');
+
+include $corePath . 'config/config.inc.php';
+
+$package_name = 'dbedit';
+$table_prefix = 'user_';
+
  
 //------------------------------------------------------------------------------
 //  DO NOT TOUCH BELOW THIS LINE
 //------------------------------------------------------------------------------
-//$base_path = realpath(dirname(dirname(__FILE__)));
 
 include_once ($corePath . 'xpdo/xpdo.class.php');
  
 // A few definitions of files/folders:
-$package_dir = $corePath.'components/'.$package_name.'/';
-$model_dir = $corePath.'components/'.$package_name.'/model/';
-$class_dir = $corePath.'components/'.$package_name.'/model/'.$package_name.'';
-$schema_dir = $corePath.'components/'.$package_name.'/model/schema';
-$mysql_class_dir = $corePath.'components/'.$package_name.'/model/'.$package_name.'/mysql';
-$xml_schema_file = $corePath.'components/'.$package_name.'/model/schema/'.$package_name.'.mysql.schema.xml';
+echo $package_dir = $corePath.'components/'.$package_name.'/';
+echo "\n". $model_dir = $corePath.'components/'.$package_name.'/model/';
+echo "\n". $class_dir = $corePath.'components/'.$package_name.'/model/'.$package_name.'';
+echo "\n". $schema_dir = $corePath.'components/'.$package_name.'/model/schema';
+echo "\n". $mysql_class_dir = $corePath.'components/'.$package_name.'/model/'.$package_name.'/mysql';
+echo "\n". $xml_schema_file = $corePath.'components/'.$package_name.'/model/schema/'.$package_name.'.mysql.schema.xml';
  
 // A few variables used to track execution times.
 $mtime= microtime();
@@ -131,10 +69,10 @@ if ( empty($package_name) )
         <p>The $package_name cannot be empty!  Please adjust the configuration and try again.</p>');
     exit;
 }
- 
+
 // Create directories if necessary
 $dirs = array($package_dir, $schema_dir ,$mysql_class_dir, $class_dir);
- 
+
 foreach ($dirs as $d)
 {
     if ( !file_exists($d) )
@@ -158,28 +96,27 @@ foreach ($dirs as $d)
         exit;
     }
 }
- 
+
 if ( $verbose )
 {
     print_msg( sprintf('<br/><strong>Ok:</strong> The necessary directories exist and have the correct permissions inside of <br/>
         <code>%s</code>', $package_dir));
 }
- 
+
 // Delete/regenerate map files?
 if ( file_exists($xml_schema_file) && !$regenerate_schema && $verbose)
 {
     print_msg( sprintf('<br/><strong>Ok:</strong> Using existing XML schema file:<br/><code>%s</code>',$xml_schema_file));
 }
- 
+
 $xpdo = new xPDO("mysql:host=$database_server;dbname=$dbase", $database_user, $database_password, $table_prefix);
- 
+
 // Set the package name and root path of that package
-$xpdo->setPackage($package_name, $package_dir, $package_dir);
 $xpdo->setDebug($debug);
- 
+
 $manager = $xpdo->getManager();
 $generator = $manager->getGenerator();
- 
+
 //Use this to create an XML schema from an existing database
 if ($regenerate_schema)
 {
@@ -188,9 +125,7 @@ if ($regenerate_schema)
     {
         print_msg( sprintf('<br/><strong>Ok:</strong> XML schema file generated: <code>%s</code>',$xml_schema_file));
     }
-    //Add our relationships
 }
-
 $xml = file_get_contents($xml_schema_file);
 $orig_doc = new DOMDocument();
 $orig_doc->formatOutput = true;
@@ -203,16 +138,15 @@ $orig_doc->save($xml_schema_file);
 // Use this to generate classes and maps from your schema
 if ($regenerate_classes)
 {
- 
     //print_msg('<br/>Attempting to remove/regenerate class files...');
     delete_class_files( $class_dir );
     delete_class_files( $mysql_class_dir );
 }
- 
+
 // This is harmless in and of itself: files won't be overwritten if they exist.
 $generator->parseSchema($xml_schema_file, $model_dir);
 
- 
+
 $mtime= microtime();
 $mtime= explode(" ", $mtime);
 $mtime= $mtime[1] + $mtime[0];
@@ -220,9 +154,9 @@ $tend= $mtime;
 $totalTime= ($tend - $tstart);
 $totalTime= sprintf("%2.4f s", $totalTime);
 
-return $modx->error->success('Custom Table schema has been generated.');
+echo "Custom Table schema has been generated.\n";
 
-/*if ($verbose)
+if ($verbose)
 {
     print_msg("<br/><br/><strong>Finished!</strong> Execution time: {$totalTime}<br/>");
 
@@ -231,18 +165,18 @@ return $modx->error->success('Custom Table schema has been generated.');
         print_msg("<br/>If you need to define aggregate/composite relationships in your XML schema file, be sure to regenerate your class files.");
     }
 
-}*/
- 
+}
+
 exit ();
- 
- 
+
+
 /*------------------------------------------------------------------------------
 INPUT: $dir: a directory containing class files you wish to delete.
 ------------------------------------------------------------------------------*/
 function delete_class_files($dir)
 {
     global $verbose;
- 
+
     $all_files = scandir($dir);
     foreach ( $all_files as $f )
     {
@@ -282,6 +216,8 @@ function print_msg($msg)
 
 function addRelationships(&$node, $xpdo)
 {
+
+    echo "Adding relationships.\n";
     $objects = $node->getElementsByTagName('object');
 
     foreach($objects as $object)
@@ -289,6 +225,8 @@ function addRelationships(&$node, $xpdo)
         if ($object->attributes->length > 0)
         {
             $className =  trim($object->getAttribute('class'));
+
+            echo "Class name:  ".$className."\n";
 
             $relationships = $xpdo->getCollection('Relationships', array('local_class' => $className));
 
@@ -308,5 +246,3 @@ function addRelationships(&$node, $xpdo)
 
     }
 }
-/* EOF */
-?>

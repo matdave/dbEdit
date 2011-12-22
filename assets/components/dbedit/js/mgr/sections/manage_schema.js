@@ -45,7 +45,7 @@ function buildMenu()
             url: Dbedit.config.connectorUrl
             ,params: {
                 action: 'mgr/dbedit/generate_schema'
-                ,corePath: Dbedit.config.modelPath
+                ,corePath: Dbedit.config.corePath
                 ,packageName: 'dbedit'
             }
             ,listeners:{

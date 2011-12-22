@@ -77,7 +77,7 @@ function buildPage(tableData)
             buildFormFields(tableData[t]['columns'][c], arrCreateFields, hidden)
 
             // Same as above.  Here we're building our collection of grid control columns
-            buildGridColumns(tableData[t]['columns'][c], arrColumns, hidden, comboId);
+            buildGridColumns(tableData[t]['columns'][c], arrColumns, hidden);
         }
 
        
@@ -265,30 +265,17 @@ Ext.extend(Dbedit.window.Update,MODx.Window);
 
 function buildFormFields(columnData, arrFormFields, hidden)
 {
-    // Our config array
-    var arrConfig = {
-        // Set the label from the comment field for column
-        fieldLabel: columnData['label']
-        // Set the name from the actual field name
-        ,name: columnData['columnName']
-        // Set a default width of 300
-        ,width: 300
-        // Set whether the column is hidden
-        ,hidden: hidden
-    }
-
-
     if(columnData['relationships'].length > 0)
     {
         arrConfig = {
-             // Set the label from the comment field for column
-        fieldLabel: columnData['label']
-        // Set the name from the actual field name
-        ,name: columnData['columnName']
-        // Set a default width of 300
-        ,width: 300
-        // Set whether the column is hidden
-        ,hidden: hidden
+            // Set the label from the comment field for column
+            fieldLabel: columnData['label']
+            // Set the name from the actual field name
+            ,name: columnData['columnName']
+            // Set a default width of 300
+            ,width: 300
+            // Set whether the column is hidden
+            ,hidden: hidden
             ,xtype: 'modx-combo'
             ,name: 'relationship'
             ,hiddenName: 'relationship'
@@ -311,6 +298,17 @@ function buildFormFields(columnData, arrFormFields, hidden)
     }
     else
     {
+        // Our config array
+        var arrConfig = {
+            // Set the label from the comment field for column
+            fieldLabel: columnData['label']
+            // Set the name from the actual field name
+            ,name: columnData['columnName']
+            // Set a default width of 300
+            ,width: 300
+            // Set whether the column is hidden
+            ,hidden: hidden
+        }
         // Get the field type from the column info.
         var type = columnData['phptype'];
 
@@ -334,6 +332,7 @@ function buildFormFields(columnData, arrFormFields, hidden)
             break;
 
             case 'decimal':
+                arrConfig['decimalPrecision'] = 4;
                 newFormField = new Ext.form.NumberField(arrConfig);
             break;
 
@@ -346,8 +345,22 @@ function buildFormFields(columnData, arrFormFields, hidden)
     arrFormFields.push(newFormField);
 }
 
-function buildGridColumns(columnData, arrColumns, hidden, comboId)
+function buildGridColumns(columnData, arrColumns, hidden)
 {
+
+    // Create config array for our new column
+    var column = {
+        // Get the column header from the table column's Comment field
+        header: columnData['label']
+        // Set the datafield name from the actual column name
+        ,dataIndex: columnData['columnName']
+        // Allow sorting
+        ,sortable: true
+        // Set a default width of 60
+        ,width: 60
+        // Set whether the column is hidden
+        ,hidden: hidden
+    }
 
     if(columnData['relationships'].length > 0)
     {
@@ -371,26 +384,9 @@ function buildGridColumns(columnData, arrColumns, hidden, comboId)
             ,renderer: true
             
         };
-        //var combo = new MODx.combo.ComboBox(arrEditorConfig);
-        var combo = Ext.ComponentMgr.create(arrEditorConfig);
+        var combo = new MODx.combo.ComboBox(arrEditorConfig);
 
-        // Create config array for our new column
-        var column = {
-            // Get the column header from the table column's Comment field
-            header: columnData['label']
-            // Set the datafield name from the actual column name
-            ,dataIndex: columnData['columnName']
-            // Allow sorting
-            ,sortable: true
-            // Set a default width of 60
-            ,width: 60
-            // Set whether the column is hidden
-            ,hidden: hidden
-            // Set the type of field for inline editing
-            ,editor: combo
-        }
-
-        combo = null;
+        column['editor'] = combo;
     }
     else
     {
@@ -425,21 +421,7 @@ function buildGridColumns(columnData, arrColumns, hidden, comboId)
                 arrEditorConfig['xtype'] = 'textfield';
         }
 
-        // Create config array for our new column
-        var column = {
-            // Get the column header from the table column's Comment field
-            header: columnData['label']
-            // Set the datafield name from the actual column name
-            ,dataIndex: columnData['columnName']
-            // Allow sorting
-            ,sortable: true
-            // Set a default width of 60
-            ,width: 60
-            // Set whether the column is hidden
-            ,hidden: hidden
-            // Set the type of field for inline editing
-            ,editor: arrEditorConfig
-        }
+        column['editor'] = arrEditorConfig;
     }
     
     // Create the new ExtJS column

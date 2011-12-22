@@ -144,7 +144,7 @@ function getRelationships($className, $columnName, &$xpdo)
     {
         foreach($arrComposites as $composite)
         {
-            if($composite['cardinality'] == 'one')
+            if($composite['cardinality'] == 'one' && $composite['local'] == $columnName)
             {
                 $arrAliases = $xpdo->getFieldAliases($composite['class']);
                 if($arrAliases['dbeditDescription'])
