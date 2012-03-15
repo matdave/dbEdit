@@ -77,7 +77,6 @@ foreach($arrTableNames as $tableName)
             ,'className' => $className
             ,'label' => $statuses[0]['Comment']
             ,'columns' => $arrMetaNumIndexed
-            //,'relationships' => getRelationships($className, $xpdo)
         );
 
         // Unset $arrMetaNumIndexed, otherwise the columns accumulate from each table.
@@ -104,67 +103,44 @@ function tableToClassName($tableName)
     return implode('', $arrName);
 }
 
-// This function parses any composites or aggregates (relationships) defined for the xPDO class
 function getRelationships($className, $columnName, &$xpdo)
 {
-    $arrRelationships = array();
+    // This is an array of processed relationships that will be returned by the function.
+    $arrRetRelationships = array();
 
     $arrAggregates = $xpdo->getAggregates($className);
-
-    if(count($arrAggregates) > 0)
-    {
-        foreach($arrAggregates as $aggregate)
-        {
-            if($aggregate['cardinality'] == 'one' && $aggregate['local'] == $columnName)
-            {
-                $arrAliases = $xpdo->getFieldAliases($aggregate['class']);
-                if($arrAliases['dbeditDescription'])
-                {
-                    $descColumn = $arrAliases['dbeditDescription'];
-                }
-                else
-                {
-                    $descColumn = 'name';
-                }
-
-                $arrRelationships[] = array(
-                    'column' => $aggregate['local']
-                    ,'class' => $aggregate['class']
-                    ,'foreign' => $aggregate['foreign']
-                    ,'label' => $descColumn
-                );
-            }
-        }
-
-    }
-
-
     $arrComposites = $xpdo->getComposites($className);
-    if(count($arrComposites) > 0)
+
+    // This is a combined array of composites and aggregates that will be processed by the function.
+    $arrRelationships = array_merge($arrAggregates, $arrComposites);
+
+    if(count($arrRelationships) > 0)
     {
-        foreach($arrComposites as $composite)
+        foreach($arrRelationships as $key => $relationship)
         {
-            if($composite['cardinality'] == 'one' && $composite['local'] == $columnName)
+            if($relationship['cardinality'] == 'one' && $relationship['local'] == $columnName)
             {
-                $arrAliases = $xpdo->getFieldAliases($composite['class']);
-                if($arrAliases['dbeditDescription'])
+                $arrAliases = $xpdo->getFieldAliases($className);
+                $alias_key = 'dbrel_'.$key;
+                if($arrAliases[$alias_key])
                 {
-                    $descColumn = $arrAliases['dbeditDescription'];
+                    $descColumn = $arrAliases[$alias_key];
                 }
                 else
                 {
                     $descColumn = 'name';
                 }
 
-                $arrRelationships[] = array(
-                    'column' => $composite['local']
-                    ,'class' => $composite['class']
-                    ,'foreign' => $composite['foreign']
+                $arrRetRelationships[] = array(
+                    'column' => $relationship['local']
+                    ,'class' => $relationship['class']
+                    ,'foreign' => $relationship['foreign']
                     ,'label' => $descColumn
                 );
             }
         }
+
     }
 
-    return $arrRelationships;
+    return $arrRetRelationships;
 }

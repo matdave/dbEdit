@@ -17,7 +17,6 @@ function buildPage()
                 ,width: 100
             }
         ]
-
     });
 
     //  Create a new MODx.Panel for the CMP.

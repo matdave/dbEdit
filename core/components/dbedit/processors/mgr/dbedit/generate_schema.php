@@ -97,6 +97,7 @@ else
     return $modx->error->failure('Package Name not specified.');
 }
 
+$corePath = MODX_CORE_PATH;
 
 include $corePath.'config/config.inc.php';
  
@@ -174,7 +175,7 @@ if ( file_exists($xml_schema_file) && !$regenerate_schema && $verbose)
 $xpdo = new xPDO("mysql:host=$database_server;dbname=$dbase", $database_user, $database_password, $table_prefix);
  
 // Set the package name and root path of that package
-$xpdo->setPackage($package_name, $package_dir, $package_dir);
+$xpdo->setPackage($package_name, $package_dir);
 $xpdo->setDebug($debug);
  
 $manager = $xpdo->getManager();
@@ -303,6 +304,14 @@ function addRelationships(&$node, $xpdo)
                 $rel_elem->setAttribute('foreign', $relationship->get('foreign'));
                 $rel_elem->setAttribute('cardinality', $relationship->get('cardinality'));
                 $rel_elem->setAttribute('owner', $relationship->get('owner'));
+
+                if($relationship->get('label_field'))
+                {
+                    $rel_label = new DOMElement('alias');
+                    $object->appendChild($rel_label);
+                    $rel_label->setAttribute('key', 'dbrel_'.$relationship->get('alias'));
+                    $rel_label->setAttribute('field', $relationship->get('label_field'));
+                }
             }
         }
 

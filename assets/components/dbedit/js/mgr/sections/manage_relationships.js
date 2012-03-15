@@ -1,7 +1,5 @@
 function buildPage()
 {
-
-
     // Create our grid for the current table
     var grid = new Dbedit.grid.Relationships();
 
@@ -31,7 +29,7 @@ Dbedit.grid.Relationships = function(config) {
         // Set our default action.
         ,baseParams: {action: 'mgr/dbedit/relationships/get_relationships'}
         // These are necessary for xPDO data operations
-        ,fields: ['id', 'local_class', 'foreign_class', 'type', 'local', 'foreign', 'alias', 'cardinality', 'owner']
+        ,fields: ['id', 'local_class', 'foreign_class', 'type', 'local', 'foreign', 'label_field', 'alias', 'cardinality', 'owner']
         ,paging: true
         ,remoteSort: true
         ,anchor: '97%'
@@ -71,6 +69,11 @@ Dbedit.grid.Relationships = function(config) {
         },{
             header: 'Foreign Key'
             ,dataIndex: 'foreign'
+            ,sortable: true
+            ,width: 60
+        },{
+            header: 'Foreign Label'
+            ,dataIndex: 'label_field'
             ,sortable: true
             ,width: 60
         },{
@@ -265,8 +268,31 @@ Dbedit.window.Create = function(config) {
                             {class: foreignClass}
                         }
                     )
+
+                    var foreignLabel = Ext.getCmp('foreign_label');
+                    foreignLabel.clearValue();
+                    foreignLabel.store.removeAll();
+                    foreignLabel.store.reload(
+                        {params:
+                            {class: foreignClass}
+                        }
+                    )
                 }
             }
+        },{
+            xtype: 'modx-combo'
+            ,fieldLabel: 'Foreign Label'
+            ,name: 'foreign_label'
+            ,id: 'foreign_label'
+            ,width: 300
+            ,hiddenName: 'foreign_label'
+            ,displayField: 'column'
+            ,valueField: 'column'
+            ,mode: 'local'
+            ,url: Dbedit.config.connectorUrl
+            ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
+            ,fields: ['column']
+            ,renderer: true
         },{
             xtype: 'modx-combo'
             ,fieldLabel: 'Relationship Type'
@@ -378,6 +404,19 @@ Dbedit.window.Update = function(config) {
                         }
                     )
                 }
+                ,render: function(e){
+                    var localClass = Ext.getCmp('local_class').getValue();
+
+                    var localKey = Ext.getCmp('local');
+                    //localKey.clearValue();
+                    localKey.store.removeAll();
+                    localKey.store.reload(
+                        {params:
+                            {class: localClass}
+                        }
+                    )
+
+                }
             }
         },{
             xtype: 'modx-combo'
@@ -395,7 +434,8 @@ Dbedit.window.Update = function(config) {
             ,fields: ['class']
             ,renderer: true
             ,listeners: {
-                select: function(e){
+                select: function(e)
+                {
                     var foreignClass = Ext.getCmp('foreign_class').getValue();
 
                     var foreignKey = Ext.getCmp('foreign');
@@ -406,8 +446,54 @@ Dbedit.window.Update = function(config) {
                             {class: foreignClass}
                         }
                     )
+
+                    var foreignLabel = Ext.getCmp('label_field');
+                    foreignLabel.clearValue();
+                    foreignLabel.store.removeAll();
+                    foreignLabel.store.reload(
+                        {params:
+                            {class: foreignClass}
+                        }
+                    )
                 }
+                ,render: function(e)
+                {
+                    var foreignClass = Ext.getCmp('foreign_class').getValue();
+
+                    var foreignKey = Ext.getCmp('foreign');
+                    //foreignKey.clearValue();
+                    foreignKey.store.removeAll();
+                    foreignKey.store.reload(
+                        {params:
+                            {class: foreignClass}
+                        }
+                    )
+
+                    var foreignLabel = Ext.getCmp('label_field');
+                    //foreignLabel.clearValue();
+                    foreignLabel.store.removeAll();
+                    foreignLabel.store.reload(
+                        {params:
+                            {class: foreignClass}
+                        }
+                    )
+                }
+
             }
+        },{
+            xtype: 'modx-combo'
+            ,fieldLabel: 'Foreign Label'
+            ,name: 'label_field'
+            ,id: 'label_field'
+            ,width: 300
+            ,hiddenName: 'label_field'
+            ,displayField: 'column'
+            ,valueField: 'column'
+            ,mode: 'local'
+            ,url: Dbedit.config.connectorUrl
+            ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
+            ,fields: ['column']
+            ,renderer: true
         },{
             xtype: 'modx-combo'
             ,fieldLabel: 'Relationship Type'
@@ -425,6 +511,7 @@ Dbedit.window.Update = function(config) {
             ,hiddenName: 'local'
             ,displayField: 'column'
             ,valueField: 'column'
+            ,mode: 'local'
             ,url: Dbedit.config.connectorUrl
             ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
             ,fields: ['column']
@@ -438,6 +525,7 @@ Dbedit.window.Update = function(config) {
             ,hiddenName: 'foreign'
             ,displayField: 'column'
             ,valueField: 'column'
+            ,mode: 'local'
             ,url: Dbedit.config.connectorUrl
             ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
             ,fields: ['column']

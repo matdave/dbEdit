@@ -134,7 +134,11 @@ Dbedit.grid.Records = function(config) {
         ,url: Dbedit.config.connectorUrl
         // Set our default action.  Also, we pass the tableName and className 
         // to the processor for xPDO access
-        ,baseParams: {action: 'mgr/dbedit/records', userTable: config.tableName, tableClass: config.className}
+        ,baseParams: {
+            action: 'mgr/dbedit/records'
+            //, userTable: config.tableName
+            ,tableClass: config.className
+        }
         // This is the processor for inline grid editing
         ,save_action: 'mgr/dbedit/updatefromgrid'
         // We need to pass the tableName and className separately for inline editing.
@@ -151,22 +155,47 @@ Dbedit.grid.Records = function(config) {
                 // This is our button for creating new records
                 text: _('dbedit.record_create')
                 ,handler: this.create
+            }
+            ,'->',{
+                xtype: 'textfield'
+                ,id: config.tableName + 'search-filter'
+                ,emptyText: 'Search...'
+                ,listeners: {
+                    'change': {fn:this.search,scope: this}
+                    ,'render': {fn: function(cmp){
+                            new Ext.KeyMap(cmp.getEl(), {
+                                key: Ext.EventObject.ENTER
+                                ,fn: function(){
+                                    this.fireEvent('change', this);
+                                    this.blur();
+                                    return true;
+                                }
+                                ,scope: cmp
+                            })
+                    }, scope: this}
+                }
             }]
     });
     Dbedit.grid.Records.superclass.constructor.call(this,config)
 };
 Ext.extend(Dbedit.grid.Records,MODx.grid.Grid,{
+    search: function(tf,nv,ov) {
+        var s = this.getStore();
+        s.baseParams.query = tf.getValue();
+        this.getBottomToolbar().changePage(1);
+        this.refresh();
+    }
     // This handler brings up our context menu with our Update and Delete options
-    getMenu: function() {
-        var m = [{
-            text: _('dbedit.record_update')
-            ,handler: this.update
-        },'-',{
-            text: _('dbedit.record_remove')
-            ,handler: this.remove
-        }];
-        this.addContextMenuItem(m);
-        return true;
+    ,getMenu: function() {
+    var m = [{
+        text: _('dbedit.record_update')
+        ,handler: this.update
+    },'-',{
+        text: _('dbedit.record_remove')
+        ,handler: this.remove
+    }];
+    this.addContextMenuItem(m);
+    return true;
     }
     // This handler creates a modal window for creating a new record
     ,create: function(btn, e)
@@ -272,13 +301,12 @@ function buildFormFields(columnData, arrFormFields, hidden)
             fieldLabel: columnData['label']
             // Set the name from the actual field name
             ,name: columnData['columnName']
+            ,hiddenName: columnData['columnName']
             // Set a default width of 300
             ,width: 300
             // Set whether the column is hidden
             ,hidden: hidden
             ,xtype: 'modx-combo'
-            ,name: 'relationship'
-            ,hiddenName: 'relationship'
             ,displayField: 'label'
             ,valueField: 'id'
             ,url: Dbedit.config.connectorUrl

@@ -6,7 +6,7 @@ set_time_limit(0);
 /* define package names */
 define('PKG_NAME', 'DbEdit');
 define('PKG_NAME_LOWER', 'dbedit');
-define('PKG_VERSION', '1.03');
+define('PKG_VERSION', '1.04');
 define('PKG_RELEASE', 'rc1');
 
 /* define build paths */
