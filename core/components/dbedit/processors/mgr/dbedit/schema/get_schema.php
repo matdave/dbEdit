@@ -6,7 +6,7 @@ $results = $modx->query("SHOW TABLES LIKE '".$prefix."%'");
 $tables = $results->fetchAll();
 
 $arrTables = array();
-require 'xpdo.config.php';
+
 foreach($tables as $table)
 {
     $arrTable = array('table_name' => $table[0]);
@@ -21,8 +21,7 @@ foreach($tables as $table)
     }
 
     $table = implode('', $arrName);
-    //$tester = $xpdo->getTableName(ucfirst($arrName[1]));
-    $tester = $xpdo->getTableName(ucfirst($table));
+    $tester = $modx->getTableName(ucfirst($table));
     if($tester == '')
     {
         $arrTable['has_schema'] = false;

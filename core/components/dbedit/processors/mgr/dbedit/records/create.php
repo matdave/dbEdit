@@ -6,10 +6,8 @@
 $class = $modx->getOption('tableClass', $scriptProperties, '');
 $table = $modx->getOption('userTable', $scriptProperties, '');
 
-include 'xpdo.config.php';
-
-$object = $xpdo->newObject($class);
-$object->fromArray($scriptProperties);
+$object = $modx->newObject($class);
+$object->fromArray($scriptProperties, '', true);
 
 /* save */
 if ($object->save() == false) {

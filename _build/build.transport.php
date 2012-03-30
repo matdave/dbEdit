@@ -6,7 +6,7 @@ set_time_limit(0);
 /* define package names */
 define('PKG_NAME', 'DbEdit');
 define('PKG_NAME_LOWER', 'dbedit');
-define('PKG_VERSION', '1.04');
+define('PKG_VERSION', '1.05');
 define('PKG_RELEASE', 'rc1');
 
 /* define build paths */
@@ -90,7 +90,6 @@ $attr = array(
 );
 $vehicle = $builder->createVehicle($category,$attr);
 
-
 //FILE RESOLVERS
 $vehicle->resolve('file',array(
     'source' => $sources['source_core'],
@@ -102,91 +101,96 @@ $vehicle->resolve('file', array(
     'target' => "return MODX_ASSETS_PATH . 'components/';"
 ));
 
-$modx->log(modX::LOG_LEVEL_INFO,'Packaged in resolvers.'); flush();
+$modx->log(modX::LOG_LEVEL_INFO,'Packaged in file resolvers.'); flush();
 $builder->putVehicle($vehicle);
 
 //********************************************************
 // CREATE MENU
 //**********************************************************
-$modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
-$menu = include $sources['data'].'menus/main.menu.php';
-if (empty($menu)) $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
-$vehicle= $builder->createVehicle($menu,array (
-    xPDOTransport::PRESERVE_KEYS => true,
-    xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'text',
-));
-$builder->putVehicle($vehicle);
-unset($vehicle,$menu);
+$menus = include $sources['data'].'menus/menus.php';
 
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
-$menu = include $sources['data'].'menus/edittables.menu.php';
-if (empty($menu)) $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
-$vehicle= $builder->createVehicle($menu,array (
-    xPDOTransport::PRESERVE_KEYS => true,
-    xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'text',
-    xPDOTransport::RELATED_OBJECTS => true,
-    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+$vehicle= $builder->createVehicle($menus['main'],array (
+    xPDOTransport::PRESERVE_KEYS => true
+,xPDOTransport::UPDATE_OBJECT => true
+,xPDOTransport::UNIQUE_KEY => 'text'
+));
+$builder->putVehicle($vehicle);
+
+
+$modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
+$vehicle= $builder->createVehicle($menus['records'],array (
+    xPDOTransport::PRESERVE_KEYS => true
+,xPDOTransport::UPDATE_OBJECT => true
+,xPDOTransport::UNIQUE_KEY => 'text'
+,xPDOTransport::RELATED_OBJECTS => true
+,xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
         xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
             'Action' => array (
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-                //xPDOTransport::UNIQUE_KEY => array ('id')
+             xPDOTransport::PRESERVE_KEYS => false
+            ,xPDOTransport::UPDATE_OBJECT => true
+            ,xPDOTransport::UNIQUE_KEY => array ('namespace','controller')
             ),
         ),
     ),
 ));
 $builder->putVehicle($vehicle);
-unset($vehicle,$menu);
 
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
-$menu = include $sources['data'].'menus/manageschema.menu.php';
-if (empty($menu)) $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
-$vehicle= $builder->createVehicle($menu,array (
-    xPDOTransport::PRESERVE_KEYS => true,
-    xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'text',
-    xPDOTransport::RELATED_OBJECTS => true,
+$vehicle= $builder->createVehicle($menus['schema'],array (
+    xPDOTransport::PRESERVE_KEYS => true
+,xPDOTransport::UPDATE_OBJECT => true
+,xPDOTransport::UNIQUE_KEY => 'text'
+,xPDOTransport::RELATED_OBJECTS => true,
     xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
         xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
             'Action' => array (
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-                //xPDOTransport::UNIQUE_KEY => array ('')
+            xPDOTransport::PRESERVE_KEYS => false
+            ,xPDOTransport::UPDATE_OBJECT => true
+            ,xPDOTransport::UNIQUE_KEY => array ('namespace','controller')
             ),
         ),
     ),
 ));
 $builder->putVehicle($vehicle);
-unset($vehicle,$menu);
 
 $modx->log(modX::LOG_LEVEL_INFO,'Packaging in menu...');
-$menu = include $sources['data'].'menus/relationships.menu.php';
-if (empty($menu)) $modx->log(modX::LOG_LEVEL_ERROR,'Could not package in menu.');
-$vehicle= $builder->createVehicle($menu,array (
-    xPDOTransport::PRESERVE_KEYS => true,
-    xPDOTransport::UPDATE_OBJECT => true,
-    xPDOTransport::UNIQUE_KEY => 'text',
-    xPDOTransport::RELATED_OBJECTS => true,
-    xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
+$vehicle= $builder->createVehicle($menus['relationships'],array (
+    xPDOTransport::PRESERVE_KEYS => true
+,xPDOTransport::UPDATE_OBJECT => true
+,xPDOTransport::UNIQUE_KEY => 'text'
+,xPDOTransport::RELATED_OBJECTS => true
+,xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
         xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
             'Action' => array (
-                xPDOTransport::PRESERVE_KEYS => false,
-                xPDOTransport::UPDATE_OBJECT => true,
-                xPDOTransport::UNIQUE_KEY => array ('namespace','controller'),
-//                xPDOTransport::UNIQUE_KEY => array ('id')
+            xPDOTransport::PRESERVE_KEYS => false
+            ,xPDOTransport::UPDATE_OBJECT => true
+            ,xPDOTransport::UNIQUE_KEY => array ('namespace','controller')
             ),
         ),
     ),
 ));
 $builder->putVehicle($vehicle);
-unset($vehicle,$menu);
+
+
+
+//PHP RESOLVERS
+$modx->log(modX::LOG_LEVEL_INFO, 'Packaging PHP resolvers...');
+$vehicle->resolve('php', array(
+    'source' => $sources['resolvers'].'setup.options.php'
+));
+$vehicle->resolve('php', array(
+    'source' => $sources['resolvers'].'relationships.table.php'
+));
+$builder->putVehicle($vehicle);
 
 // zip up the package
 $modx->log(modX::LOG_LEVEL_INFO, 'Packing up transport package zip...');
+$builder->setPackageAttributes(array(
+    'setup-options' => array(
+        'source' => $sources['build'].'setup.options.php'
+    )
+));
 $builder->pack();
 
 $tend = explode(' ', microtime());

@@ -1,9 +1,5 @@
 <?php
-include dirname(dirname(__FILE__)).'/xpdo.config.php';
-
-$class = 'Relationships';
-
-$object = $xpdo->newObject($class);
+$object = $modx->newObject('Relationships');
 $object->fromArray($scriptProperties);
 
 /* save */

@@ -98,7 +98,7 @@ else
 }
 
 $corePath = MODX_CORE_PATH;
-
+$modx->log(MODX_LOG_LEVEL_ERROR,'In Schema Generation');
 include $corePath.'config/config.inc.php';
  
 $table_prefix = $modx->getOption('dbedit.prefix'); 
@@ -305,12 +305,12 @@ function addRelationships(&$node, $xpdo)
                 $rel_elem->setAttribute('cardinality', $relationship->get('cardinality'));
                 $rel_elem->setAttribute('owner', $relationship->get('owner'));
 
-                if($relationship->get('label_field'))
+                if($relationship->get('foreign_label'))
                 {
                     $rel_label = new DOMElement('alias');
                     $object->appendChild($rel_label);
                     $rel_label->setAttribute('key', 'dbrel_'.$relationship->get('alias'));
-                    $rel_label->setAttribute('field', $relationship->get('label_field'));
+                    $rel_label->setAttribute('field', $relationship->get('foreign_label'));
                 }
             }
         }

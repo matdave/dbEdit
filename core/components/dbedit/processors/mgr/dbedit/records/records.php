@@ -1,21 +1,23 @@
 <?php
 $isLimit = !empty($scriptProperties['limit']);
+
+$pri_key = $modx->getOption('tablePriKey', $scriptProperties, 'id');
+
 $start = $modx->getOption('start',$scriptProperties,0);
 $limit = $modx->getOption('limit',$scriptProperties,10);
-$sort = $modx->getOption('sort',$scriptProperties,'id');
+$sort = $modx->getOption('sort',$scriptProperties,$pri_key);
 $dir = $modx->getOption('dir',$scriptProperties,'ASC');
 $query = $modx->getOption('query', $scriptProperties, '');
-$class = $modx->getOption('tableClass', $scriptProperties, '');
-include 'xpdo.config.php';
+$class = $this->getProperty('tableClass');
 
 /* build query */
-$c = $xpdo->newQuery($class);
+$c = $modx->newQuery($class);
 
 $c->sortby($sort,$dir);
 
 if(!empty($query))
 {
-    $arrColumns = $xpdo->getFields($class);
+    $arrColumns = $modx->getFields($class);
 
     $arrWhere = array();
 
@@ -29,18 +31,18 @@ if(!empty($query))
     $c->where($arrWhere);
 }
 
-$count = $xpdo->getCount($class,$c);
+$count = $modx->getCount($class,$c);
 
 if ($isLimit) $c->limit($limit,$start);
 
-$records = $xpdo->getIterator($class, $c);
+$records = $modx->getCollection($class, $c);
 
 /* iterate */
 $list = array();
-foreach ($records as $record) 
+foreach ($records as $record)
 {
-    $recordArray = $record->toArray();   
+    $recordArray = $record->toArray();
     $list[]= $recordArray;
 }
 return $this->outputArray($list,$count);
-?>
+

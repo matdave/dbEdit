@@ -1,11 +1,9 @@
 <?php
 $menu = $modx->newObject('modMenu');
 $menu -> fromArray(array(
-    'text' => 'Database Editor'
-    ,'parent' => ''
-    ,'description' => 'Use this to manage your custom tables.'
-    ,'params' => ''
-    ,'handler' => ''
+    'text' => 'dbedit'
+    ,'description' => 'dbedit.desc'
+    ,'icon' => 'images/icons/database.png'
 ), '', true, true);
 
 return $menu;

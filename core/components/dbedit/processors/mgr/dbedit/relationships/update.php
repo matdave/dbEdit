@@ -1,11 +1,9 @@
 <?php
-include dirname(dirname(__FILE__)).'/xpdo.config.php';
-
 $class = 'Relationships';
 
 // lexiconize
 if (empty($scriptProperties['id'])) return $modx->error->failure($class.' not specified.');
-$object = $xpdo->getObject($class,$scriptProperties['id']);
+$object = $modx->getObject($class,$scriptProperties['id']);
 // lexiconize
 if (empty($object)) return $modx->error->failure($class.' not found.');
 

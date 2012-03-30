@@ -7,12 +7,11 @@
  * To change this template use File | Settings | File Templates.
  */
 $_lang['dbedit'] = 'Database Editor';
-$_lang['dbedit.desc'] = 'Manage your custom databases.';
-$_lang['dbedit.edit_tables'] = 'Edit Tables';
+$_lang['dbedit.desc'] = 'Manage your custom data.';
 $_lang['dbedit.manage_relationships'] = 'Manage Relationships';
 $_lang['dbedit.manage_relationships_desc'] = 'Manage your related tables.';
 $_lang['dbedit.edit_records'] = 'Edit Records';
-$_lang['dbedit.edit_tables_desc'] = 'Edit the data in your custom tables.';
+$_lang['dbedit.edit_records_desc'] = 'Edit the data in your custom tables.';
 $_lang['dbedit.record_err_save'] = 'An error occurred while trying to save the record.';
 $_lang['dbedit.record_create'] = 'Add Record';
 $_lang['dbedit.record_update'] = 'Update Record';

@@ -11,14 +11,13 @@ $class = $modx->getOption('class', $scriptProperties, '');
 $id = $modx->getOption('id', $scriptProperties, '');
 $label = $modx->getOption('label', $scriptProperties, '');
 
-include 'xpdo.config.php';
 // lexiconize
 if (empty($scriptProperties['id'])) return $modx->error->failure($class.' not specified.');
-$object = $xpdo->getObject($class,$scriptProperties['id']);
+$object = $modx->getObject($class,$scriptProperties['id']);
 // lexiconize
 if (empty($object)) return $modx->error->failure($class.' not found.');
 
-$arrObjects = $xpdo->getCollection($class);
+$arrObjects = $modx->getCollection($class);
 foreach($arrObjects as $object)
 {
     $arrListItems[] = array(

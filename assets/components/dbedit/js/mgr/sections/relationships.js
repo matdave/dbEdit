@@ -1,24 +1,27 @@
-function buildPage()
-{
-    // Create our grid for the current table
-    var grid = new Dbedit.grid.Relationships();
+Ext.onReady(function() {
+    MODx.load({ xtype: 'dbedit-panel-relationships'});
+});
 
-    //  Create a new MODx.Panel for the CMP.
-    var panel = new MODx.Panel({
-       id: 'dbedit-panel'
-       ,border: false
-       ,baseCls: 'modx-formpanel'
-       ,renderTo: 'dbedit-panel-relationships-div'
-       ,items: [
-           {html: '<h2>Manage Relationships</h2>'
-           ,border: false
-           ,cls: 'modx-page-header'
-           }
-           //  This is our grid we generated above.
-           ,grid
-       ]
+Dbedit.panel.Relationships = function(config)
+{
+    config = config || {};
+    Ext.applyIf(config, {
+        id: 'dbedit-panel-relationships'
+        ,border: false
+        ,baseCls: 'modx-formpanel'
+        ,renderTo: 'dbedit-panel-relationships-div'
+        ,items: [
+            {html: '<h2>'+_('dbedit.manage_relationships')+'</h2>'
+                ,border: false
+                ,cls: 'modx-page-header'
+            }
+            ,{xtype: 'dbedit-grid-relationships'}
+        ]
     });
+    Dbedit.panel.Relationships.superclass.constructor.call(this,config);
 }
+Ext.extend(Dbedit.panel.Relationships,MODx.Panel);
+Ext.reg('dbedit-panel-relationships',Dbedit.panel.Relationships);
 
 Dbedit.grid.Relationships = function(config) {
     config = config || {};
@@ -29,7 +32,7 @@ Dbedit.grid.Relationships = function(config) {
         // Set our default action.
         ,baseParams: {action: 'mgr/dbedit/relationships/get_relationships'}
         // These are necessary for xPDO data operations
-        ,fields: ['id', 'local_class', 'foreign_class', 'type', 'local', 'foreign', 'label_field', 'alias', 'cardinality', 'owner']
+        ,fields: ['id', 'local_class', 'foreign_class', 'type', 'local', 'foreign', 'foreign_label', 'alias', 'cardinality', 'owner']
         ,paging: true
         ,remoteSort: true
         ,anchor: '97%'
@@ -73,7 +76,7 @@ Dbedit.grid.Relationships = function(config) {
             ,width: 60
         },{
             header: 'Foreign Label'
-            ,dataIndex: 'label_field'
+            ,dataIndex: 'foreign_label'
             ,sortable: true
             ,width: 60
         },{
@@ -153,6 +156,7 @@ Ext.extend(Dbedit.grid.Relationships,MODx.grid.Grid,{
         });
     }
 });
+Ext.reg('dbedit-grid-relationships', Dbedit.grid.Relationships);
 
 // Definition for our basic DbEdit window
 Dbedit.Window = function(config) {
@@ -211,7 +215,8 @@ Dbedit.window.Create = function(config) {
             ,name: 'id'
             ,id: 'id'
             ,fields: ['id']
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             // Set the label from the comment field for column
             ,fieldLabel: 'Local Table'
@@ -241,7 +246,8 @@ Dbedit.window.Create = function(config) {
                     )
                 }
             }
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             // Set the label from the comment field for column
             ,fieldLabel: 'Foreign Table'
@@ -279,7 +285,8 @@ Dbedit.window.Create = function(config) {
                     )
                 }
             }
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Foreign Label'
             ,name: 'foreign_label'
@@ -293,7 +300,8 @@ Dbedit.window.Create = function(config) {
             ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
             ,fields: ['column']
             ,renderer: true
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Relationship Type'
             ,name: 'type'
@@ -301,7 +309,8 @@ Dbedit.window.Create = function(config) {
             ,mode: 'local'
             ,store: ['composite', 'aggregate']
             ,renderer: true
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Local Key'
             ,name: 'local'
@@ -315,7 +324,8 @@ Dbedit.window.Create = function(config) {
             ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
             ,fields: ['column']
             ,renderer: true
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Foreign Key'
             ,name: 'foreign'
@@ -329,13 +339,15 @@ Dbedit.window.Create = function(config) {
             ,baseParams:{action: 'mgr/dbedit/relationships/columns'}
             ,fields: ['column']
             ,renderer: true
-        },{
+        }
+        ,{
             xtype: 'textfield'
             ,fieldLabel: 'Alias Name'
             ,name: 'alias'
             ,id: 'alias'
             ,width: 300
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Cardinality'
             ,name: 'cardinality'
@@ -343,7 +355,8 @@ Dbedit.window.Create = function(config) {
             ,mode: 'local'
             ,store: ['one', 'many']
             ,renderer: true
-        },{
+        }
+        ,{
             xtype: 'modx-combo'
             ,fieldLabel: 'Owner'
             ,name: 'owner'
@@ -447,7 +460,7 @@ Dbedit.window.Update = function(config) {
                         }
                     )
 
-                    var foreignLabel = Ext.getCmp('label_field');
+                    var foreignLabel = Ext.getCmp('foreign_label');
                     foreignLabel.clearValue();
                     foreignLabel.store.removeAll();
                     foreignLabel.store.reload(
@@ -469,7 +482,7 @@ Dbedit.window.Update = function(config) {
                         }
                     )
 
-                    var foreignLabel = Ext.getCmp('label_field');
+                    var foreignLabel = Ext.getCmp('foreign_label');
                     //foreignLabel.clearValue();
                     foreignLabel.store.removeAll();
                     foreignLabel.store.reload(
@@ -483,10 +496,10 @@ Dbedit.window.Update = function(config) {
         },{
             xtype: 'modx-combo'
             ,fieldLabel: 'Foreign Label'
-            ,name: 'label_field'
-            ,id: 'label_field'
+            ,name: 'foreign_label'
+            ,id: 'foreign_label'
             ,width: 300
-            ,hiddenName: 'label_field'
+            ,hiddenName: 'foreign_label'
             ,displayField: 'column'
             ,valueField: 'column'
             ,mode: 'local'
